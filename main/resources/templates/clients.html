@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+layout:decorator="template">
+
+<head>
+<meta charset="utf-8"/>
+<title>Projet Manipulation des comptes</title>
+</head>
+<body>
+
+<div layout:fragment="content">
+	<div sec:authorize="hasRole('ROLE_ADMIN')" >
+	<div class="col-md-6 col-sm-6 col-xs-12 spacer">
+		<div class="panel panel-primary">
+			<div class="panel-heading"> Informations Client </div>
+			<div class="panel-body">
+				<form class="form-horizontal" th:action="@{editClient}" method="post" th:if="${clientUP}" enctype="multipart/form-data">
+				<input type="hidden" name="code"  th:value="${clientUP.code}" id="code" />
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="nom">Nom </label>
+						  <div class="col-sm-10">
+						    <input type="text" class="form-control" name="nom"  th:value="${clientUP.nom}" id="nom" placeholder="Tapez le nom"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="prenom">Prenom </label>
+						  <div class="col-sm-10"> 
+						    <input type="text" class="form-control" name="prenom" th:value="${clientUP.prenom}" id="prenom" placeholder="Tapez le prenom"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="Adress">Adresse </label>
+						  <div class="col-sm-10"> 
+						    <input type="text" class="form-control" id="Adress" th:value="${clientUP.adress}" name="adress" placeholder="Tapez l'adresse"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="email">Email </label>
+						  <div class="col-sm-10"> 
+						    <input type="email" class="form-control" name="email" th:value="${clientUP.email}" id="email" placeholder="Tapez l'email"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="telephone">Telephonne </label>
+						  <div class="col-sm-10"> 
+						    <input type="tel" class="form-control" name="telephone" th:value="${clientUP.telephone}" id="telephone" placeholder="Tapez le telephonne"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+			
+						<div class="form-group">
+					  <label class="control-label col-sm-2">Photo </label>
+							 
+						  <div class="col-sm-offset-2 col-sm-10">
+						    <input type="file" name="pic" class="btn btn-primary"/>
+						    					<img  class="img-circle" th:src="@{getPhoto(id=${client.code})}" width="100" height="100"/>
+						    
+						    <span class="warning"></span>
+						  </div>
+						</div>
+						
+						
+						
+						<div class="form-group"> 
+						  <div class="col-sm-offset-2 col-sm-10">
+						    <button type="submit" class="btn btn-primary">Submit</button>
+						  </div>
+						</div>
+					</form>
+					
+					<form class="form-horizontal" enctype="multipart/form-data" th:action="@{saveClient}" method="post" th:unless="${clientUP}" >
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="nom">Nom </label>
+						  <div class="col-sm-10">
+						    <input type="text" class="form-control"  name="nom"  id="nom" placeholder="Tapez le nom"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="prenom">Prenom </label>
+						  <div class="col-sm-10"> 
+						    <input type="text" class="form-control" name="prenom"  id="prenom" placeholder="Tapez le prenom"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="Adress">Adresse </label>
+						  <div class="col-sm-10"> 
+						    <input type="text" class="form-control" id="Adress"  name="adress" placeholder="Tapez l'adresse"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="email">Email </label>
+						  <div class="col-sm-10"> 
+						    <input type="email" class="form-control" name="email" id="email" placeholder="Tapez l'email"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="telephone">Telephonne </label>
+						  <div class="col-sm-10"> 
+						    <input type="tel" class="form-control" name="telephone"  id="telephone" placeholder="Tapez le telephonne"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						
+						<div class="form-group">
+					  <label class="control-label col-sm-2">Photo </label>
+							 
+						  <div class="col-sm-offset-2 col-sm-10">
+						    <input type="file" name="pic" class="btn btn-primary"/>
+						    <span class="warning"></span>
+						  </div>
+						</div>
+						
+						<div class="form-group"> 
+						  <div class="col-sm-offset-2 col-sm-10">
+						    <button type="submit" class="btn btn-primary">Submit</button>
+						  </div>
+						</div>
+					</form>
+			</div>
+			<div th:if="${exception}">
+				<label th:text="${exception}" class="error"></label>
+			</div>
+		</div>
+	</div>
+	</div>
+
+	<div class="col-md-6 col-sm-6 col-xs-12 spacer">
+		<div class="panel panel-primary">
+			<div class="panel-heading"> Resultat de Recherche </div>
+			<div class="panel-body">
+				<div class="container-fluid">
+					<table class="table table-striped">
+						<thead class="bg-success">
+							<tr>
+								<th>Nom</th><th>Prenom</th><th>Consulter</th><th>Modifier</th><th>Supprimer</th>
+							</tr>
+						</thead>
+						<tbody>
+						<tr th:each="c:${pageClient.content}">
+							<td th:text="${c.nom}"></td>
+							<td th:text="${c.prenom}"></td>
+							<td><a class="btn btn-success" th:href="@{getClients(code=${c.code},page=${pageCourante},size=${size},motCle=${motCle})}"> Consulter</a></td>
+							<td><a class="btn btn-info" th:href="@{getClients(codeUP=${c.code},page=${pageCourante},size=${size},motCle=${motCle})}"> Modifier</a></td>
+							<td><a class="btn btn-denger" onclick="return confirm('etes vous sure?')" 
+							th:href="@{deleteClient(code=${c.code},page=${pageCourante},size=${size},motCle=${motCle})}"> Supprimer</a></td>
+						</tr>
+						</tbody>	
+					</table>
+				</div>
+				<div class ="container">
+					<ul class="nav nav-pills">
+						<li th:class="${pageCourante}==${status.index}?'active':''" th:each="pg,status:${pages}"> 
+							<a th:href="@{getClients(page=${status.index},size=${size},motCle=${motCle})}" 
+							th:text="${status.index}"> </a>
+						</li>
+					</ul>
+				</div>
+			
+			</div>
+		</div>
+		</div>
+	<div >
+		<div class="col-md-7 col-sm-7 col-xs-12 ">
+		<div class="panel panel-primary">
+		<div class="panel-heading"> Consulter Client </div>
+			<div class="panel-body" >
+				<div class="container-fluid" th:if="${client}">
+				<div class="col-md-6 col-sm-6 col-xs-6">
+				
+				<div class="">
+					<label>code :</label>
+					<label th:text="${client.code}"></label>
+				</div>	
+					<div class="">
+					<label>Nom :</label>
+					<label th:text="${client.nom}"></label>
+				</div>	
+				<div class="">
+					<label>Prenom:</label>
+					<label th:text="${client.prenom}"></label>
+				</div>	
+				<div class="">
+					<label> Email:</label>
+					<label th:text="${client.email}"></label>
+				</div>
+				<div class="">
+					<label> Telephone:</label>
+					<label th:text="${client.telephone}"></label>
+				</div>
+				<div class="">
+					<label>Adress :</label>
+					<label th:text="${client.adress}"></label>
+				</div>
+					<div class="">
+					<label>Photo :</label>
+					<img  class="img-circle" th:src="@{getPhoto(id=${client.code})}" width="100" height="100"/>
+				</div>
+				</div>
+				
+			</div>
+			</div>
+		</div>
+		</div>
+	</div>
+	
+		<div class="col-md-4 col-sm-4 col-xs-12">
+		<div class="panel panel-primary">
+			<div class="panel-heading"> Recherche Client </div>
+			<div class="panel-body">
+				<form th:action="getClients" method="get">
+				<div class="form-group">
+					<label>Mot Cle :</label>
+					<input type="text" name="motCle" th:value="${motCle}"/>
+					<button class="btn btn-primary" type="submit">Consulter</button>
+				</div>
+			</form>
+			</div>
+			<div th:if="${exception}">
+				<label th:text="${exception}" class="error"></label>
+			</div>
+		</div>
+		</div>
+</div>
+
+</body>
+</html>

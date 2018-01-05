@@ -1,0 +1,13 @@
+.error{
+	color:red;
+}
+.spacer{
+	margin-top: 3px;
+}
+.spacer-xs{
+	margin-top: 2px;
+}
+.spacer-md{
+	margin-top: 30px;
+}
+

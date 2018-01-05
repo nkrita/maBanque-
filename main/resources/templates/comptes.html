@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+layout:decorator="template">
+
+<head>
+<meta charset="utf-8"/>
+<title>Projet Manipulation des comptes</title>
+ 
+ <script type="text/javascript">
+  function changetypeDiv(val){
+	  var compteC = document.getElementById('CC');
+	  var compteE = document.getElementById('CE');
+	
+	  if(val == "CC"){
+		  compteC.style.display ='block';
+		  compteE.style.display ='none';
+	  }
+	  else if (val == "CE"){
+		  compteC.style.display ='none';
+		  compteE.style.display ='block';
+	  }
+
+  }
+</script>
+</head>
+<body>
+
+<div layout:fragment="content">
+
+	<div class="col-md-6 col-sm-6 col-xs-12 spacer-md">
+		<div class="panel panel-primary">
+			<div class="panel-heading"> Listes Des Comptes </div>
+			<div class="panel-body">
+				<div class="container-fluid">
+					<table class="table table-striped">
+						<thead class="bg-success">
+							<tr>
+								<th>Code Compte</th><th>Date Creation</th><th>Type</th><th>Solde</th><th>Consulter</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="cp:${listComptes.content}">
+							<td th:text="${cp.codeCompte}"></td>
+							<td th:text="${cp.dateCreation}"></td>
+							<td th:text="${cp.class.simpleName}"></td>
+							<td th:text="${cp.solde}"></td>
+							<td><a class="btn btn-info" th:href="@{getCompte(codeCompte=${cp.codeCompte})}">Consulter </a></td>
+						</tr>
+						</tbody>	
+					</table>
+				</div>
+				<div class ="container">
+					<ul class="nav nav-pills">
+						<li th:class="${pageCourante}==${status.index}?'active':''" th:each="pg,status:${pages}"> 
+							<a th:href="@{comptes(page=${status.index},size=${size})}" 
+							th:text="${status.index}"> </a>
+						</li>
+					</ul>
+				</div>
+			</div>
+		</div>
+		</div>
+		
+		
+		<div sec:authorize="hasRole('ROLE_ADMIN')" >
+		<div class="col-md-6 col-sm-6 col-xs-12 spacer-md" >
+		<div class="panel panel-primary">
+			<div class="panel-heading"> Ajouter Compte </div>
+			<div class="panel-body">
+				<div class="container-fluid">
+					
+				<div class="">
+				     <label class="radio-inline mar">
+				     <input type="radio" name="typecompte"  value="CC" onclick="changetypeDiv(this.value);" checked="checked"/>
+				      Compte Courant</label>
+				     <label class="radio-inline">
+				     <input type="radio" name="typecompte"  value="CE"  onclick="changetypeDiv(this.value);"/>
+				     Compte Epargne</label>
+				</div>
+					<form class="form-horizontal spacer-md" th:action="@{ajouterCompte}" method="post" id="CC">
+						<div class="form-group ">
+						  <label class="control-label col-sm-2" for="code_compte">Code</label>
+						  <div class="col-sm-10">
+						    <input type="text" class="form-control" name="code_compte"  id="code_compte" placeholder="Tapez le code"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="type_compte">Type </label>
+						  <div class="col-sm-10"> 
+						    <input type="text" class="form-control" name="type_compte"  id="type_compte" value="CC" disabled="disabled"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="solde">Solde </label>
+						  <div class="col-sm-10"> 
+						    <input type="text" class="form-control" name="solde" id="solde" placeholder="Entrer le Solde"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="decouvert">Decouvert </label>
+						  <div class="col-sm-10"> 
+						    <input type="text" class="form-control" name="decouvert"  id="decouvert" placeholder="Entrer le decouvert"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						
+						<div class="form-group">
+					      <label class="control-label col-sm-2" for="pwd">Client</label>
+					      <div class="col-md-8">          
+					        <select name="code_client" class="form-control">
+					        <option value="" selected="selected" disabled="disabled">Séléctionnez un client</option>
+							<option th:each="c:${listClient}" th:value="${c.code}"><a th:text="${c.nom}+' '+${c.prenom}"></a></option>
+							</select>
+						  </div>
+					    </div>
+						
+						<div class="form-group"> 
+						  <div class="col-sm-offset-2 col-sm-10">
+						    <button type="submit" class="btn btn-primary">Submit</button>
+						  </div>
+						</div>
+					</form>
+					
+					<form class="form-horizontal" th:action="@{ajouterCompte}" method="post" id="CE" style="display: none">
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="code_client">Code</label>
+						  <div class="col-sm-10">
+						    <input type="text" class="form-control" name="code_compte"  id="code_compte" placeholder="Tapez le code"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="type_compte">Type </label>
+						  <div class="col-sm-10"> 
+						    <input type="text" class="form-control" name="type_compte"  id="type_compte" value="CE" disabled="disabled"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="solde">Solde </label>
+						  <div class="col-sm-10"> 
+						    <input type="text" class="form-control" id="solde"  name="solde" placeholder="Entrer le solde"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+						  <label class="control-label col-sm-2" for="tuax">Taux </label>
+						  <div class="col-sm-10"> 
+						    <input type="text" class="form-control" name="taux" id="taux" placeholder="Entrer le taux"/>
+						  </div>
+						  <span class="warning" ></span>
+						</div>
+						<div class="form-group">
+					      <label class="control-label col-sm-2" for="pwd">Client</label>
+					      <div class="col-md-8">          
+					        <select name="code_client" class="form-control">
+					        <option value="" selected="selected" disabled="disabled">Séléctionnez un client</option>
+							<option th:each="c:${listClient}" th:value="${c.code}"><a th:text="${c.nom}+' '+${c.prenom}"></a></option>
+							</select>
+						  </div>
+					    </div>
+						<div class="form-group"> 
+						  <div class="col-sm-offset-2 col-sm-10">
+						    <button type="submit" class="btn btn-primary">Submit</button>
+						  </div>
+						</div>
+					</form>
+				</div>
+			
+			</div>
+		</div>
+		</div>
+	</div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity4"
+layout:decorator="template">
+<head>
+<meta charset="utf-8"/>
+<title>Comptes</title>
+<link rel="stylesheet" type="text/css" href="../static/css/bootstrap.min.css"
+	th:href="@{css/bootstrap.min.css}"/>
+<link rel="stylesheet" type="text/css" href="../static/css/style.css"
+th:href="@{css/style.css}"/>
+<script type="text/javascript">
+  function changeOperDiv(val){
+	  var operation = document.getElementById('operation');
+	
+	  if(val == "virement"){
+		  operation.style.display ='block';
+	  }
+	  else{
+		  operation.style.display ='none';
+	  }
+
+  }
+</script>
+</head>
+<body>
+<div layout:fragment="content">
+	<div class="col-md-6 col-sm-6 col-xs-12 spacer">
+		<div class="panel panel-info">
+			<div class="panel-heading"> Comptes </div>
+			<div class="panel-body">
+			<form th:action="getCompte" method="get">
+				<div class="form-group">
+					<label>Code Compte :</label>
+					<input type="text" name="codeCompte" th:value="${codeCompte}"/>
+					<button class="btn btn-primary" type="submit">Consulter</button>
+				</div>
+			</form>
+			</div>
+			<div th:if="${exception}">
+				<label th:text="${exception}" class="error"></label>
+			</div>
+		</div>
+	</div>
+	
+	<div th:if="${compte}">
+		<div class="col-md-6 col-sm-6 col-xs-12 spacer">
+		<div class="panel panel-info">
+			<div class="panel-heading"> Information sur le Compte </div>
+			<div class="panel-body">
+				<div class="form-group">
+					<label>Solde :</label>
+					<label th:text="${compte.solde}"></label>
+				</div>	
+				<div class="form-group">
+					<label>Date Creation :</label>
+					<label th:text="${compte.dateCreation}"></label>
+				</div>	
+				<div class="form-group" th:if="${compte.class.simpleName}=='CompteCourant'">
+					<label> Découvert :</label>
+					<label th:text="${compte.decouvert}"></label>
+				</div>
+				<div class="form-group" th:if="${compte.class.simpleName}=='CompteEpargne'">
+					<label> Taux :</label>
+					<label th:text="${compte.taux}"></label>
+				</div>
+				<div class="form-group">
+					<label>Nom Client :</label>
+					<label th:text="${compte.client.nom}"></label>
+				</div>
+			
+			</div>
+		</div>
+		</div>
+	</div>
+	<div sec:authorize="hasRole('ROLE_ADMIN')" >
+	<div class="col-md-6 col-sm-6 col-xs-12 spacer" th:if="${compte}">
+		<div class="panel panel-info">
+			<div class="panel-heading"> Opérations sur le compte </div>
+			<div class="panel-body">
+			<form th:action="@{/saveOperation}" method="post">
+				<div class="form-group">
+					<label>Compte :</label>
+					<input type="hidden" name="codeCompte" th:value="${codeCompte}"/>
+					<label th:text="${codeCompte}"></label>
+				</div>
+				<div>
+				     <label class="radio-inline mar">
+				     <input type="radio" name="typeOperation"  value="versement" onclick="changeOperDiv(this.value);" checked="checked"/>
+				      Versement</label>
+				     <label class="radio-inline">
+				     <input type="radio" name="typeOperation"  value="retrait"  onclick="changeOperDiv(this.value);"/>
+				     Retrait</label>
+				     <label class="radio-inline">
+				     <input type="radio" name="typeOperation" value="virement" onclick="changeOperDiv(this.value);"/>
+				     Virement</label>
+				</div>
+				
+			<div class="panel-body">
+				<div class="form-group" id="operation" style="display: none">
+					<label> Destination:</label>
+					<input  type="text" name="codeCompte2" 
+						placeholder="Enter le code compte destinataire"  th:value="${codeCompte}" required="required"/>
+				</div>
+				<div class="form-group" style="display: block"></div>
+					<label> Montant:</label>
+					<input  type="text" name="montant" placeholder="Enter Montant" th:value="${montant}" required="required"/>
+					<button class="btn btn-primary" type="submit">Effectuer</button>
+			</div>
+			<div class="form-group">
+				<label th:text="${#httpServletRequest.getParameter('errorTransaction')}" class="error"></label>
+			</div>
+			</form>
+			</div>
+			
+		</div>
+	</div>
+	</div>
+	<div class="col-md-6 col-sm-6 col-xs-12 spacer" th:if="${compte}">
+		<div class="panel panel-info">
+			<div class="panel-heading"> Opération sur le Compte </div>
+			<div class="panel-body">
+			<div class="container-fluid">
+		<table class="table table-striped">
+			<thead class="bg-success">
+				<tr>
+					<th>Numero</th><th>Date</th><th>Montant</th><th>Type</th>
+				</tr>
+			</thead>
+			<tbody>
+			<tr th:each="o:${pageOperation.content}">
+				<td th:text="${o.numeroOperation}"></td>
+				<td th:text="${o.dateOperation}"></td>
+				<td th:text="${o.montant}"></td>
+				<td th:text="${o.class.simpleName}"></td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class ="container">
+		<ul class="nav nav-pills">
+		<li th:class="${pageCourante}==${status.index}?'active':''" th:each="pg,status:${pages}"> 
+			<a th:href="@{getCompte(page=${status.index},size=${size},codeCompte=${compte.codeCompte})}" 
+			th:text="${status.index+1}"> </a>
+		</li>
+	</ul>
+</div>
+	</div>
+	</div>
+	</div>
+</div>
+</body>
+</html>
